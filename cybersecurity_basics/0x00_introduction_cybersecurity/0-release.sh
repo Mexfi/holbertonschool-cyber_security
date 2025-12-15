@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -Po '(?<=^ID=).*' /etc/os-release
+lsb_release -i | cut -d: -f2 | sed 's/^[[:space:]]*//'
