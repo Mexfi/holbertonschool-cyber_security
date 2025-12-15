@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -Po '(?<=^ID=).*' /etc/os-release
+grep -oP '^ID=\K.*' /etc/os-release
