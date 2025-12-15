@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "$(sha256sum "$1" | awk '{print $1}') $1" == "$2 $1" && echo "$1: OK" || echo "$1: FAIL"
+echo "$2  $1" > temp.sha256 && sha256sum -c temp.sha256 && rm temp.sha256
