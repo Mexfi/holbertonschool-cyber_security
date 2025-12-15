@@ -1,2 +1,6 @@
 #!/bin/bash
-lsb_release -i | cut -d: -f2 | sed 's/^[[:space:]]*//'
+if lsb_release -i | grep -q "Distributor ID:"; then
+  echo "ok"
+else
+  echo "invalid"
+fi
