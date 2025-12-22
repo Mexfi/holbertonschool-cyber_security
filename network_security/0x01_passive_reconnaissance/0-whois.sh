@@ -1,55 +1,55 @@
 #!/bin/bash
-
-# Check if the domain name is provided as an argument
+# Check if domain argument is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 <domain>"
-  exit 1
+    exit 1
 fi
 
-# Run the whois scan and format output using awk
-whois "$1" | awk '
-# Registrant Information
-/Registrant Name/ {print "Registrant$Name," $2}
-(/Registrant Organization/ && $2 != "") {print "Registrant$Organization," $2}
-(/Registrant Street/ && $2 != "") {print "Registrant$Street," $2 " "}
-(/Registrant City/ && $2 != "") {print "Registrant$City," $2}
-(/Registrant State\/Province/ && $2 != "") {print "Registrant$State/Province," $2}
-(/Registrant Postal Code/ && $2 != "") {print "Registrant$Postal$Code," $2}
-(/Registrant Country/ && $2 != "") {print "Registrant$Country," $2}
-(/Registrant Phone/ && $2 != "") {print "Registrant$Phone," $2}
-(/Registrant Phone Ext/ && $2 != "") {print "Registrant$Phone$Ext:," $2}
-(/Registrant Fax/ && $2 != "") {print "Registrant$Fax," $2}
-(/Registrant Fax Ext/ && $2 != "") {print "Registrant$Fax$Ext:," $2}
-(/Registrant Email/ && $2 != "") {print "Registrant$Email," $2}
+DOMAIN=$1
+OUTPUT="${DOMAIN}.csv"
 
-# Admin Information
-/Admin Name/ {print "Admin$Name," $2}
-(/Admin Organization/ && $2 != "") {print "Admin$Organization," $2}
-(/Admin Street/ && $2 != "") {print "Admin$Street," $2 " "}
-(/Admin City/ && $2 != "") {print "Admin$City," $2}
-(/Admin State\/Province/ && $2 != "") {print "Admin$State/Province," $2}
-(/Admin Postal Code/ && $2 != "") {print "Admin$Postal$Code," $2}
-(/Admin Country/ && $2 != "") {print "Admin$Country," $2}
-(/Admin Phone/ && $2 != "") {print "Admin$Phone," $2}
-(/Admin Phone Ext/ && $2 != "") {print "Admin$Phone$Ext:," $2}
-(/Admin Fax/ && $2 != "") {print "Admin$Fax," $2}
-(/Admin Fax Ext/ && $2 != "") {print "Admin$Fax$Ext:," $2}
-(/Admin Email/ && $2 != "") {print "Admin$Email," $2}
+# Run whois and process with awk
+whois "$DOMAIN" | awk -F': +' '
+BEGIN {
+    # Define the order of sections and fields as required
+    split("Registrant,Admin,Tech", groups, ",");
+    split("Name,Organization,Street,City,State/Province,Postal Code,Country,Phone,Phone Ext:,Fax,Fax Ext:,Email", fields, ",");
+}
+{
+    # Clean the keys and values to remove leading/trailing spaces
+    k = $1; gsub(/^[ \t]+|[ \t]+$/, "", k);
+    v = $2; gsub(/^[ \t]+|[ \t]+$/, "", v);
+    # Store in an associative array
+    data[k] = v;
+}
+END {
+    for (i = 1; i <= 3; i++) {
+        for (j = 1; j <= 12; j++) {
+            # Construct the CSV Label (e.g., Registrant Name)
+            csv_label = groups[i] " " fields[j];
 
-# Tech Information
-/Tech Name/ {print "Tech$Name," $2}
-(/Tech Organization/ && $2 != "") {print "Tech$Organization," $2}
-(/Tech Street/ && $2 != "") {print "Tech$Street," $2 " "}
-(/Tech City/ && $2 != "") {print "Tech$City," $2}
-(/Tech State\/Province/ && $2 != "") {print "Tech$State/Province," $2}
-(/Tech Postal Code/ && $2 != "") {print "Tech$Postal$Code," $2}
-(/Tech Country/ && $2 != "") {print "Tech$Country," $2}
-(/Tech Phone/ && $2 != "") {print "Tech$Phone," $2}
-(/Tech Phone Ext/ && $2 != "") {print "Tech$Phone$Ext:," $2}
-(/Tech Fax/ && $2 != "") {print "Tech$Fax," $2}
-(/Tech Fax Ext/ && $2 != "") {print "Tech$Fax$Ext:," $2}
-(/Tech Email/ && $2 != "") {print "Tech$Email," $2}
-' > "$1.csv"
+            # Construct the Lookup Key for whois data (e.g., Registrant Name)
+            # Note: We remove the colon for lookups (e.g., Phone Ext: -> Phone Ext)
+            lookup_key = csv_label;
+            gsub(/:/, "", lookup_key);
 
-# Remove the extra newline at the end of the file
-sed -i '' -e '$a\' "$1.csv"
+            val = data[lookup_key];
+
+            # Hint: Add space after Street fields
+            if (fields[j] == "Street") {
+                val = val " ";
+            }
+
+            # Prepare the output line
+            line = csv_label "," val;
+
+            # Handle newline logic to ensure no extra newline at the end of file
+            if (total_output == "") {
+                total_output = line;
+            } else {
+                total_output = total_output "\n" line;
+            }
+        }
+    }
+    # Write to file without trailing newline
+    printf "%s", total_output > "'"$OUTPUT"'"
+}'
