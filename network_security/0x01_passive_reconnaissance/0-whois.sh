@@ -1,49 +1,52 @@
 #!/bin/bash
-# 0-whois.sh - Extract whois info into CSV using awk
+# Usage: ./0-whois.sh domain.com
 
-DOMAIN=$1
-OUTPUT="${DOMAIN}.csv"
+domain=$1
+output="${domain}.csv"
 
-whois "$DOMAIN" | awk -F': +' '
+whois "$domain" | awk -F: '
 BEGIN {
-    # Define groups and fields strictly in order
-    split("Registrant,Admin,Tech", groups, ",");
-    split("Name,Organization,Street,City,State/Province,Postal Code,Country,Phone,Phone Ext:,Fax,Fax Ext:,Email", fields, ",");
+    OFS="," 
 }
-{
-    # Clean keys and values, store in data array
-    k = $1; gsub(/^[ \t]+|[ \t]+$/, "", k);
-    v = $2; gsub(/^[ \t]+|[ \t]+$/, "", v);
-    data[k] = v;
-}
-END {
-    # Iterate exactly 36 times (3 sections * 12 fields)
-    for (i = 1; i <= 3; i++) {
-        for (j = 1; j <= 12; j++) {
-            csv_label = groups[i] " " fields[j];
-            
-            # Map labels to WHOIS keys (remove colons for searching)
-            search_key = csv_label;
-            gsub(/:/, "", search_key);
-            
-            val = data[search_key];
+# Registrant
+/^Registrant Name/        {print "Registrant Name",$2}
+/^Registrant Organization/ {print "Registrant Organization",$2}
+/^Registrant Street/       {print "Registrant Street",$2" "}
+/^Registrant City/         {print "Registrant City",$2}
+/^Registrant State/        {print "Registrant State/Province",$2}
+/^Registrant Postal Code/  {print "Registrant Postal Code",$2}
+/^Registrant Country/      {print "Registrant Country",$2}
+/^Registrant Phone/        {print "Registrant Phone",$2}
+/^Registrant Phone Ext/    {print "Registrant Phone Ext:",$2}
+/^Registrant Fax$/         {print "Registrant Fax",$2}
+/^Registrant Fax Ext/      {print "Registrant Fax Ext:",$2}
+/^Registrant Email/        {print "Registrant Email",$2}
 
-            # Hint: Add space after Street fields
-            if (fields[j] == "Street") {
-                val = val " ";
-            }
+# Admin
+/^Admin Name/              {print "Admin Name",$2}
+/^Admin Organization/      {print "Admin Organization",$2}
+/^Admin Street/            {print "Admin Street",$2" "}
+/^Admin City/              {print "Admin City",$2}
+/^Admin State/             {print "Admin State/Province",$2}
+/^Admin Postal Code/       {print "Admin Postal Code",$2}
+/^Admin Country/           {print "Admin Country",$2}
+/^Admin Phone/             {print "Admin Phone",$2}
+/^Admin Phone Ext/         {print "Admin Phone Ext:",$2}
+/^Admin Fax$/              {print "Admin Fax",$2}
+/^Admin Fax Ext/           {print "Admin Fax Ext:",$2}
+/^Admin Email/             {print "Admin Email",$2}
 
-            # Build line
-            line = csv_label "," val;
-            
-            # Add results to a buffer with newline control
-            if (final == "") {
-                final = line;
-            } else {
-                final = final "\n" line;
-            }
-        }
-    }
-    # Print the final result
-    printf "%s", final;
-}' > "$OUTPUT"
+# Tech
+/^Tech Name/               {print "Tech Name",$2}
+/^Tech Organization/       {print "Tech Organization",$2}
+/^Tech Street/             {print "Tech Street",$2" "}
+/^Tech City/               {print "Tech City",$2}
+/^Tech State/              {print "Tech State/Province",$2}
+/^Tech Postal Code/        {print "Tech Postal Code",$2}
+/^Tech Country/            {print "Tech Country",$2}
+/^Tech Phone/              {print "Tech Phone",$2}
+/^Tech Phone Ext/          {print "Tech Phone Ext:",$2}
+/^Tech Fax$/               {print "Tech Fax",$2}
+/^Tech Fax Ext/            {print "Tech Fax Ext:",$2}
+/^Tech Email/              {print "Tech Email",$2}
+' | sed 's/^ //' > "$output"
