@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Check if a domain name is provided as an argument
+# Check if the domain name is provided as an argument
 if [ -z "$1" ]; then
   echo "Usage: $0 <domain>"
   exit 1
 fi
 
-# Get the WHOIS information for the provided domain
+# Run the whois scan and format output using awk
 whois "$1" | awk '
 # Registrant Information
 /Registrant Name/ {print "Registrant$Name," $2}
@@ -49,8 +49,7 @@ whois "$1" | awk '
 (/Tech Fax/ && $2 != "") {print "Tech$Fax," $2}
 (/Tech Fax Ext/ && $2 != "") {print "Tech$Fax$Ext:," $2}
 (/Tech Email/ && $2 != "") {print "Tech$Email," $2}
+' > "$1.csv"
 
-' > "$1.csv" # Output to a file named as the domain name with a .csv extension
-
-# Remove any trailing newline
+# Remove the extra newline at the end of the file
 sed -i '' -e '$a\' "$1.csv"
