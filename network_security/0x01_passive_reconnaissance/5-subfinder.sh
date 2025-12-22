@@ -1,2 +1,2 @@
 #!/bin/bash
-subfinder -d $1 -silent | tee >(awk '{ "dig +short "$1 | getline ip; if (ip!="") print $1","ip }' > $1.txt)
+subfinder -d $1 -silent -nW -oI -o $1.txt
