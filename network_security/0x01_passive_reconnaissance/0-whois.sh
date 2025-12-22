@@ -1,132 +1,56 @@
 #!/bin/bash
 
-# Check if the domain is provided
+# Check if a domain name is provided as an argument
 if [ -z "$1" ]; then
-    echo "Usage: $0 <domain>"
-    exit 1
+  echo "Usage: $0 <domain>"
+  exit 1
 fi
 
-# Run whois scan on the domain
+# Get the WHOIS information for the provided domain
 whois "$1" | awk '
-BEGIN { FS=": "; OFS="," }
+# Registrant Information
+/Registrant Name/ {print "Registrant$Name," $2}
+(/Registrant Organization/ && $2 != "") {print "Registrant$Organization," $2}
+(/Registrant Street/ && $2 != "") {print "Registrant$Street," $2 " "}
+(/Registrant City/ && $2 != "") {print "Registrant$City," $2}
+(/Registrant State\/Province/ && $2 != "") {print "Registrant$State/Province," $2}
+(/Registrant Postal Code/ && $2 != "") {print "Registrant$Postal$Code," $2}
+(/Registrant Country/ && $2 != "") {print "Registrant$Country," $2}
+(/Registrant Phone/ && $2 != "") {print "Registrant$Phone," $2}
+(/Registrant Phone Ext/ && $2 != "") {print "Registrant$Phone$Ext:," $2}
+(/Registrant Fax/ && $2 != "") {print "Registrant$Fax," $2}
+(/Registrant Fax Ext/ && $2 != "") {print "Registrant$Fax$Ext:," $2}
+(/Registrant Email/ && $2 != "") {print "Registrant$Email," $2}
 
-/Registrant/ {
-    print "Registrant$Name," $2
-}
+# Admin Information
+/Admin Name/ {print "Admin$Name," $2}
+(/Admin Organization/ && $2 != "") {print "Admin$Organization," $2}
+(/Admin Street/ && $2 != "") {print "Admin$Street," $2 " "}
+(/Admin City/ && $2 != "") {print "Admin$City," $2}
+(/Admin State\/Province/ && $2 != "") {print "Admin$State/Province," $2}
+(/Admin Postal Code/ && $2 != "") {print "Admin$Postal$Code," $2}
+(/Admin Country/ && $2 != "") {print "Admin$Country," $2}
+(/Admin Phone/ && $2 != "") {print "Admin$Phone," $2}
+(/Admin Phone Ext/ && $2 != "") {print "Admin$Phone$Ext:," $2}
+(/Admin Fax/ && $2 != "") {print "Admin$Fax," $2}
+(/Admin Fax Ext/ && $2 != "") {print "Admin$Fax$Ext:," $2}
+(/Admin Email/ && $2 != "") {print "Admin$Email," $2}
 
-/Registrant[[:space:]]Organization/ {
-    print "Registrant$Organization," $2
-}
+# Tech Information
+/Tech Name/ {print "Tech$Name," $2}
+(/Tech Organization/ && $2 != "") {print "Tech$Organization," $2}
+(/Tech Street/ && $2 != "") {print "Tech$Street," $2 " "}
+(/Tech City/ && $2 != "") {print "Tech$City," $2}
+(/Tech State\/Province/ && $2 != "") {print "Tech$State/Province," $2}
+(/Tech Postal Code/ && $2 != "") {print "Tech$Postal$Code," $2}
+(/Tech Country/ && $2 != "") {print "Tech$Country," $2}
+(/Tech Phone/ && $2 != "") {print "Tech$Phone," $2}
+(/Tech Phone Ext/ && $2 != "") {print "Tech$Phone$Ext:," $2}
+(/Tech Fax/ && $2 != "") {print "Tech$Fax," $2}
+(/Tech Fax Ext/ && $2 != "") {print "Tech$Fax$Ext:," $2}
+(/Tech Email/ && $2 != "") {print "Tech$Email," $2}
 
-/Registrant[[:space:]]Street/ {
-    print "Registrant$Street," $2
-}
+' > "$1.csv" # Output to a file named as the domain name with a .csv extension
 
-/Registrant[[:space:]]City/ {
-    print "Registrant$City," $2
-}
-
-/Registrant[[:space:]]State/Province/ {
-    print "Registrant$State/Province," $2
-}
-
-/Registrant[[:space:]]Postal/Code/ {
-    print "Registrant$Postal$Code," $2
-}
-
-/Registrant[[:space:]]Country/ {
-    print "Registrant$Country," $2
-}
-
-/Registrant[[:space:]]Phone/ {
-    print "Registrant$Phone," $2
-}
-
-/Registrant[[:space:]]Fax/ {
-    print "Registrant$Fax," $2
-}
-
-/Registrant[[:space:]]Email/ {
-    print "Registrant$Email," $2
-}
-
-/Admin/ {
-    print "Admin$Name," $2
-}
-
-/Admin[[:space:]]Organization/ {
-    print "Admin$Organization," $2
-}
-
-/Admin[[:space:]]Street/ {
-    print "Admin$Street," $2
-}
-
-/Admin[[:space:]]City/ {
-    print "Admin$City," $2
-}
-
-/Admin[[:space:]]State/Province/ {
-    print "Admin$State/Province," $2
-}
-
-/Admin[[:space:]]Postal/Code/ {
-    print "Admin$Postal$Code," $2
-}
-
-/Admin[[:space:]]Country/ {
-    print "Admin$Country," $2
-}
-
-/Admin[[:space:]]Phone/ {
-    print "Admin$Phone," $2
-}
-
-/Admin[[:space:]]Fax/ {
-    print "Admin$Fax," $2
-}
-
-/Admin[[:space:]]Email/ {
-    print "Admin$Email," $2
-}
-
-/Tech/ {
-    print "Tech$Name," $2
-}
-
-/Tech[[:space:]]Organization/ {
-    print "Tech$Organization," $2
-}
-
-/Tech[[:space:]]Street/ {
-    print "Tech$Street," $2
-}
-
-/Tech[[:space:]]City/ {
-    print "Tech$City," $2
-}
-
-/Tech[[:space:]]State/Province/ {
-    print "Tech$State/Province," $2
-}
-
-/Tech[[:space:]]Postal/Code/ {
-    print "Tech$Postal$Code," $2
-}
-
-/Tech[[:space:]]Country/ {
-    print "Tech$Country," $2
-}
-
-/Tech[[:space:]]Phone/ {
-    print "Tech$Phone," $2
-}
-
-/Tech[[:space:]]Fax/ {
-    print "Tech$Fax," $2
-}
-
-/Tech[[:space:]]Email/ {
-    print "Tech$Email," $2
-}
-'
+# Remove any trailing newline
+sed -i '' -e '$a\' "$1.csv"
