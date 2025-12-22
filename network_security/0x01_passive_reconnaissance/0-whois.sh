@@ -8,7 +8,7 @@ DOMAIN=$1
 OUTPUT="${DOMAIN}.csv"
 
 # Run whois and process with awk
-whois "$DOMAIN" | awk -F': +' '
+whois "$DOMAIN" | awk -F': +' -v out_file="$OUTPUT" '
 BEGIN {
     split("Registrant,Admin,Tech", groups, ",");
     split("Name,Organization,Street,City,State/Province,Postal Code,Country,Phone,Phone Ext:,Fax,Fax Ext:,Email", fields, ",");
@@ -20,15 +20,15 @@ BEGIN {
     data[k] = v;
 }
 END {
-    out = "";
+    final_str = "";
     for (i = 1; i <= 3; i++) {
         for (j = 1; j <= 12; j++) {
             csv_label = groups[i] " " fields[j];
-            
+
             # Lookup key (remove colon for data retrieval)
             lookup_key = csv_label;
             gsub(/:/, "", lookup_key);
-            
+
             val = data[lookup_key];
 
             # Hint: Add space after Street fields
@@ -37,15 +37,15 @@ END {
             }
 
             line = csv_label "," val;
-            
-            # Build string
-            if (out == "") {
-                out = line;
+
+            # Build string with proper newline handling
+            if (final_str == "") {
+                final_str = line;
             } else {
-                out = out "\n" line;
+                final_str = final_str "\n" line;
             }
         }
     }
-    # Write ONLY the data to the file
-    printf "%s", out > "'"$OUTPUT"'"
+    # Print exactly the content to the file without extra script characters
+    printf "%s", final_str > out_file;
 }'
