@@ -1,1 +1,24 @@
-NMSR8V8Y9B2UOLBG
+(root㉿kali)-[~]
+└─# dig @10.42.74.244 passive.hbtn TXT
+;; communications error to 10.42.74.244#53: timed out
+
+; <<>> DiG 9.20.15-2-Debian <<>> @10.42.74.244 passive.hbtn TXT
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 25367
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: 3b60387dfbe97795010000006949a583b64ad158879bb2e2 (good)
+;; QUESTION SECTION:
+;passive.hbtn.                  IN      TXT
+
+;; ANSWER SECTION:
+passive.hbtn.           604800  IN      TXT     "Holberton Sec Lab - bc41162998d0f50aa29b2126081fb69d"
+
+;; Query time: 112 msec
+;; SERVER: 10.42.74.244#53(10.42.74.244) (UDP)
+;; WHEN: Mon Dec 22 15:09:41 EST 2025
+;; MSG SIZE  rcvd: 134
