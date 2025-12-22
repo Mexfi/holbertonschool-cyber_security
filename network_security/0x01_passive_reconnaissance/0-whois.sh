@@ -7,45 +7,39 @@ fi
 DOMAIN=$1
 OUTPUT="${DOMAIN}.csv"
 
-# Run whois and process with awk
-whois "$DOMAIN" | awk -F': +' -v out_file="$OUTPUT" '
+# Run whois and format using ONLY awk
+whois "$DOMAIN" | awk -F': +' -v OFILE="$OUTPUT" '
 BEGIN {
+    # 3 Groups and 12 Fields = 36 lines total
     split("Registrant,Admin,Tech", groups, ",");
     split("Name,Organization,Street,City,State/Province,Postal Code,Country,Phone,Phone Ext:,Fax,Fax Ext:,Email", fields, ",");
 }
 {
-    # Clean keys and values
+    # Capture whois data into an array
     k = $1; gsub(/^[ \t]+|[ \t]+$/, "", k);
     v = $2; gsub(/^[ \t]+|[ \t]+$/, "", v);
     data[k] = v;
 }
 END {
-    final_str = "";
     for (i = 1; i <= 3; i++) {
         for (j = 1; j <= 12; j++) {
-            csv_label = groups[i] " " fields[j];
+            # Construct keys
+            csv_key = groups[i] " " fields[j];
+            lookup = csv_key; gsub(/:/, "", lookup);
+            
+            val = data[lookup];
 
-            # Lookup key (remove colon for data retrieval)
-            lookup_key = csv_label;
-            gsub(/:/, "", lookup_key);
+            # Add space after Street fields per hint
+            if (fields[j] == "Street") val = val " ";
 
-            val = data[lookup_key];
-
-            # Hint: Add space after Street fields
-            if (fields[j] == "Street") {
-                val = val " ";
-            }
-
-            line = csv_label "," val;
-
-            # Build string with proper newline handling
-            if (final_str == "") {
-                final_str = line;
-            } else {
-                final_str = final_str "\n" line;
-            }
+            # Store each line in a temporary variable
+            line = csv_key "," val;
+            
+            # Combine lines; add newline ONLY between lines
+            if (final == "") final = line;
+            else final = final "\n" line;
         }
     }
-    # Print exactly the content to the file without extra script characters
-    printf "%s", final_str > out_file;
+    # Output only the result to the file, no trailing script characters
+    printf "%s", final > OFILE;
 }'
