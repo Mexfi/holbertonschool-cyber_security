@@ -10,28 +10,25 @@ OUTPUT="${DOMAIN}.csv"
 # Run whois and process with awk
 whois "$DOMAIN" | awk -F': +' '
 BEGIN {
-    # Define the order of sections and fields as required
     split("Registrant,Admin,Tech", groups, ",");
     split("Name,Organization,Street,City,State/Province,Postal Code,Country,Phone,Phone Ext:,Fax,Fax Ext:,Email", fields, ",");
 }
 {
-    # Clean the keys and values to remove leading/trailing spaces
+    # Clean keys and values
     k = $1; gsub(/^[ \t]+|[ \t]+$/, "", k);
     v = $2; gsub(/^[ \t]+|[ \t]+$/, "", v);
-    # Store in an associative array
     data[k] = v;
 }
 END {
+    out = "";
     for (i = 1; i <= 3; i++) {
         for (j = 1; j <= 12; j++) {
-            # Construct the CSV Label (e.g., Registrant Name)
             csv_label = groups[i] " " fields[j];
-
-            # Construct the Lookup Key for whois data (e.g., Registrant Name)
-            # Note: We remove the colon for lookups (e.g., Phone Ext: -> Phone Ext)
+            
+            # Lookup key (remove colon for data retrieval)
             lookup_key = csv_label;
             gsub(/:/, "", lookup_key);
-
+            
             val = data[lookup_key];
 
             # Hint: Add space after Street fields
@@ -39,17 +36,16 @@ END {
                 val = val " ";
             }
 
-            # Prepare the output line
             line = csv_label "," val;
-
-            # Handle newline logic to ensure no extra newline at the end of file
-            if (total_output == "") {
-                total_output = line;
+            
+            # Build string
+            if (out == "") {
+                out = line;
             } else {
-                total_output = total_output "\n" line;
+                out = out "\n" line;
             }
         }
     }
-    # Write to file without trailing newline
-    printf "%s", total_output > "'"$OUTPUT"'"
+    # Write ONLY the data to the file
+    printf "%s", out > "'"$OUTPUT"'"
 }'
