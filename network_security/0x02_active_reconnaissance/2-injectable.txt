@@ -1,1 +1,1 @@
-http://active.hbtn/admin'
+/product
