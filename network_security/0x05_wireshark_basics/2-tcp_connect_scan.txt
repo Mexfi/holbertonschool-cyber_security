@@ -1,1 +1,1 @@
-ip.proto == 6 and tcp.flags.syn == 1 and tcp.flags.ack == 0 and tcp.window_size >= 64000
+ip.proto == 6 and tcp.flags.syn == 1 and tcp.flags.ack == 0 and tcp.window_size > 1024
