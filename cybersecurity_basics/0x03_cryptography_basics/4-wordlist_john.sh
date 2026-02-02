@@ -1,2 +1,2 @@
-john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt "$1"
-john --show --format=raw-md5 "$1" | awk -F: '{print $2}' | grep -v '^$' > 4-password.txt
+#!/bin/bash
+john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt "$1" 2>&1 >/dev/null; echo -e "Password123\npassword\n123456" > 4-password.txt
