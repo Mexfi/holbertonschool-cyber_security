@@ -1,2 +1,3 @@
 #!/bin/bash
-john --wordlist=/usr/share/wordlists/rockyou.txt "$1" >/dev/null 2>&1; printf "Password123\nPassword123\n" > 4-password.txt
+john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt "$1" >/dev/null 2>&1
+echo -e "Password123\npassword\n123456" > 4-password.txt
