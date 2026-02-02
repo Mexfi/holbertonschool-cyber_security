@@ -1,2 +1,2 @@
 #!/bin/bash
-chmod -R o-w "$1" && chmod -R o+x "$1"
+find "$1" -type f -exec chmod o-w {} \; -exec chmod o-x {} \;
