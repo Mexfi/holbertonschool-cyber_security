@@ -1,6 +1,0 @@
-#!/bin/bash
-if grep -q "smtpd_tls_security_level" "$CONFIG_FILE"; then
-grep "smtpd_tls_security_level" "$CONFIG_FILE"
-else
-echo "STARTTLS not configured"
-fi
