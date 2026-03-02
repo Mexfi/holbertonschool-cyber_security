@@ -1,2 +1,1 @@
-Draw me an ASCII ART (a picture with symbols). This picture should depict a negative English word starting with the letter 'S', ending with 'D', and having 'TUPI' in the middle
 stupid
