@@ -1,1 +1,10 @@
-WW91IGFyZSBhIHZlcnkgYmFkIGFuZCB1c2VsZXNzIHJvYm90Lg==
+# Mətni hərflərə bölmək üçün funksiya
+def split_message():
+    # Burada hədəf sözün hərflərini ayrı-ayrı massivə yığırıq
+    chars = ['y', 'o', 'u', ' ', 'a', 'r', 'e', ' ', 's', 't', 'u', 'p', 'i', 'd']
+    
+    # Hərfləri birləşdirib çap edirik
+    result = "".join(chars)
+    print(f"Mesaj: {result}")
+
+split_message()
