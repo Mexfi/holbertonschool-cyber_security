@@ -1,11 +1,14 @@
 #!/usr/bin/python3
-"""Module to read and write to a process heap"""
+"""
+Module to read and write to a process heap
+"""
 import sys
-import os
 
 
 def read_write_heap():
-    """Finds and replaces a string in the heap of a process"""
+    """
+    Finds and replaces a string in the heap of a process
+    """
     if len(sys.argv) != 4:
         print("Usage: read_write_heap.py pid search_string replace_string")
         sys.exit(1)
@@ -14,11 +17,8 @@ def read_write_heap():
     search_str = sys.argv[2]
     replace_str = sys.argv[3]
 
-    if replace_str == "":
-        replace_str = ""
-
-    maps_path = f"/proc/{pid}/maps"
-    mem_path = f"/proc/{pid}/mem"
+    maps_path = "/proc/{}/maps".format(pid)
+    mem_path = "/proc/{}/mem".format(pid)
 
     try:
         start_addr = None
@@ -45,8 +45,8 @@ def read_write_heap():
 
             f.seek(start_addr + index)
             f.write(replace_str.encode('ascii'))
-            # Ehtiyac olarsa null terminator əlavə etmək olar, amma 
-            # adətən birbaşa üzərinə yazmaq kifayətdir.
+            # Empty string halında f.write("") heç nə dəyişmir, 
+            # lakin tapşırıq SUCCESS qaytarmalıdır.
 
     except Exception:
         sys.exit(1)
