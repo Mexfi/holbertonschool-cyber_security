@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 """
-Module to read and write to a process heap
+Module to read and write to a process heap.
 """
 import sys
 
 
 def read_write_heap():
     """
-    Finds and replaces a string in the heap of a process
+    Finds and replaces a string in the heap of a process.
     """
     if len(sys.argv) != 4:
         print("Usage: read_write_heap.py pid search_string replace_string")
@@ -43,10 +43,9 @@ def read_write_heap():
             except ValueError:
                 sys.exit(1)
 
+            # String tapıldısa, həmin mövqeyə gedib yeni mətni yazırıq
             f.seek(start_addr + index)
             f.write(replace_str.encode('ascii'))
-            # Empty string halında f.write("") heç nə dəyişmir, 
-            # lakin tapşırıq SUCCESS qaytarmalıdır.
 
     except Exception:
         sys.exit(1)
