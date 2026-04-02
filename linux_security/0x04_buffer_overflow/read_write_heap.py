@@ -38,12 +38,14 @@ def read_write_heap():
             f.seek(start_addr)
             heap_data = f.read(end_addr - start_addr)
 
-            try:
-                index = heap_data.index(search_str.encode('ascii'))
-            except ValueError:
+            # Stringi tapırıq
+            search_bytes = search_str.encode('ascii')
+            index = heap_data.find(search_bytes)
+
+            if index == -1:
                 sys.exit(1)
 
-            # String tapıldısa, həmin mövqeyə gedib yeni mətni yazırıq
+            # Əvəzləməni icra edirik
             f.seek(start_addr + index)
             f.write(replace_str.encode('ascii'))
 
