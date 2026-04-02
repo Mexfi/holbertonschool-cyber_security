@@ -38,16 +38,19 @@ def read_write_heap():
             f.seek(start_addr)
             heap_data = f.read(end_addr - start_addr)
 
-            # Stringi tapırıq
             search_bytes = search_str.encode('ascii')
             index = heap_data.find(search_bytes)
 
             if index == -1:
                 sys.exit(1)
 
-            # Əvəzləməni icra edirik
             f.seek(start_addr + index)
-            f.write(replace_str.encode('ascii'))
+            # Əgər replace_str boşdursa, hədəfin ilk baytını NULL edirik
+            # Bu, string-i məntiqi olaraq boşaldır (C dilindəki kimi)
+            if not replace_str:
+                f.write(b'\0')
+            else:
+                f.write(replace_str.encode('ascii'))
 
     except Exception:
         sys.exit(1)
