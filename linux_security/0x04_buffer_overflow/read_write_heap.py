@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+k#!/usr/bin/python3
+"""Faylın bu hissəsi modulu sənədləşdirir (Module documentation)"""
 import sys
 import os
 
