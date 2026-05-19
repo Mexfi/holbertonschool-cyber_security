@@ -36,8 +36,9 @@ if options[:add]
 
 elsif options[:list]
   if File.exist?(FILE_NAME) && !File.zero?(FILE_NAME)
-    File.readlines(FILE_NAME).each_with_index do |line, index|
-      puts "#{index + 1}. #{line.strip}"
+    puts "Tasks:"
+    File.readlines(FILE_NAME).each do |line|
+      puts line.strip
     end
   end
 
